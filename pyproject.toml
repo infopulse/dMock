@@ -15,6 +15,7 @@ readme = "Readme.md"
 dependencies = [
     "fastapi>=0.110.1",
     "requests>=2.31.0",
+    "uvicorn>=0.29.0",
     "toml>=0.10.2"]
 
 authors = [
@@ -37,4 +38,4 @@ Documentation = "https://github.com/infopulse/dMock"
 Code = "https://github.com/infopulse/dMock"
 
 [project.scripts]
-dmock = "dmock.main:main"
+dmock = "dmock.entry:main"
