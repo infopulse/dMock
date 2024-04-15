@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=69.1.1", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+exclude = [".github"]
+
+[project]
+name = "dMock"
+version = "0.0.2"
+description = "lightweight tool for mocking REST API dynamically"
+requires-python = ">=3.11"
+readme = "Readme.md"
+
+dependencies = [
+    "fastapi>=0.110.1",
+    "requests>=2.31.0",
+    "toml>=0.10.2"]
+
+authors = [
+    { name = "Oleksii Ostapov" },
+    { name = "Oleh Pleskach" }
+
+]
+
+classifiers = [
+    "Topic :: Software Development :: Testing",
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://infopulse.com"
+Documentation = "https://github.com/infopulse/dMock"
+Code = "https://github.com/infopulse/dMock"
+
+[project.scripts]
+dmock = "dmock.main:main"
