@@ -13,7 +13,8 @@ requires-python = ">=3.11"
 readme = "Readme.md"
 
 dependencies = [
-    "fastapi>=0.110.1",
+    "tortoise-orm>=0.20.0",
+    "aerich >= 0.7.2",
     "requests>=2.31.0",
     "uvicorn>=0.29.0",
     "toml>=0.10.2"]
