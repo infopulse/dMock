@@ -13,9 +13,10 @@ register_tortoise(app=app,
 
 @app.on_event("startup")
 async def startup_event():
-    command = Command(tortoise_config=settings.DB_CONFIG, app='models')
-    await command.init()
-    await command.init_db(safe=True)
+    pass
+    # command = Command(tortoise_config=settings.DB_CONFIG, app='models')
+    # await command.init()
+    # await command.init_db(safe=True)
 
 
 @app.get("/")
