@@ -1,7 +1,14 @@
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
+from dmock.models.setup import init
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+async def startup_event():
+    await init()
+
 
 # register_tortoise(
 #     app,
