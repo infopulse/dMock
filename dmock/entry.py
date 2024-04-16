@@ -3,7 +3,7 @@ import asyncio
 from hypercorn.config import Config
 from hypercorn.asyncio import serve
 
-from dmock.main import app
+from main import app
 
 log = logging.getLogger("dmock")
 log.setLevel(logging.INFO)
