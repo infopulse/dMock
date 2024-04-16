@@ -1,22 +1,22 @@
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
-from dmock.models.setup import init
+from dmock import settings
+from aerich import Command
+
 
 app = FastAPI()
+register_tortoise(app=app,
+                  config=settings.DB_CONFIG,
+                  generate_schemas=True,
+                  add_exception_handlers=True)
 
 
 @app.on_event("startup")
 async def startup_event():
-    await init()
+    command = Command(tortoise_config=settings.DB_CONFIG, app='models')
+    await command.init()
+    await command.init_db(safe=True)
 
-
-# register_tortoise(
-#     app,
-#     db_url='sqlite://db.sqlite3',
-#     modules={'models': ['__main__']},
-#     generate_schemas=True,
-#     add_exception_handlers=True,
-# )
 
 @app.get("/")
 async def root():
