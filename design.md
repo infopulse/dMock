@@ -40,4 +40,7 @@ erDiagram
 - [ ] setup default data in migrations
 - [x] create init migration using `aerich init -t dmock.settings.DB_CONFIG --location dmock/models/migrations -s .`
 - [ ] add swagger url to documentation
-- [ ] reconsider if we need migrations
+- [x] reconsider if we need migrations
+- [ ] find ALL matching rules and get mock with the highest priority (id == priority)
+- [ ] there should be identification, how many rules matched
+- [ ] create in-memory key-value storage for actions
