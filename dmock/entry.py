@@ -1,8 +1,17 @@
-import uvicorn
+import logging
+import asyncio
+from hypercorn.config import Config
+from hypercorn.asyncio import serve
+
+from main import app
+
+log = logging.getLogger("dmock")
+log.setLevel(logging.INFO)
+log.addHandler(logging.StreamHandler())
 
 
 def main():
-    uvicorn.run("main:app", port=5000, log_level="info", reload=True)
+    asyncio.run(serve(app, Config()))
 
 
 if __name__ == "__main__":
