@@ -37,9 +37,10 @@ class Rules(Model):
     id = fields.IntField(pk=True)
     mock = fields.ForeignKeyField("models.Mock", related_name="rules")
     is_active = fields.BooleanField(default=True)
-    type = fields.TextField()  # 1-default, 2-url, 3-body, 4-headers. makes priority
+    type = fields.TextField()  # 1-default, 2-url, 3-json, 3-body, 4-headers. makes priority
     operation = fields.TextField()  # contains, in, equals, regex, starts_with, ends_with
     key = fields.TextField()
+    erroneous = fields.BooleanField(default=False)
 
     class Meta:
         table = "rules"

@@ -8,3 +8,5 @@ dMock.egg-info
 dist
 
 .env
+
+.log
