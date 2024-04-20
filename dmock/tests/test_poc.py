@@ -13,7 +13,7 @@ class TestMock(test.TestCase):
     def tearDown(self):
         finalizer()
 
-    async def asyncSetUp(self) -> None:
+    async def asyncSetUp(self):
         await super().asyncSetUp()
         self.mock = await Mock.create(name="test")
 
