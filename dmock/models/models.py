@@ -25,7 +25,6 @@ class Mock(Model):
     created_at = fields.DatetimeField(auto_now_add=True)
 
     requests_count = fields.IntField(default=0)
-    active_rules_count = fields.IntField(default=0)
 
     class Meta:
         table = "mock"
@@ -35,7 +34,7 @@ class Mock(Model):
 # for static mock data
 class Rules(Model):
     id = fields.IntField(pk=True)
-    mock = fields.ForeignKeyField("models.Mock", related_name="rules")
+    mock = fields.ForeignKeyField("models.Mock", related_name="rules", on_delete=fields.CASCADE)
     is_active = fields.BooleanField(default=True)
     type = fields.TextField()  # 1-default, 2-url, 3-json, 3-body, 4-headers. makes priority
     operation = fields.TextField()  # contains, in, equals, regex, starts_with, ends_with
@@ -49,7 +48,7 @@ class Rules(Model):
 
 class MockLog(Model):
     id = fields.IntField(pk=True)
-    mock = fields.ForeignKeyField("models.Mock", related_name="logs")
+    mock = fields.ForeignKeyField("models.Mock", related_name="logs", on_delete=fields.CASCADE)
 
     request_method = fields.TextField()
     request_url = fields.TextField()
