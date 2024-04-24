@@ -1,7 +1,6 @@
-from fastapi import FastAPI, Request, HTTPException
-from typing import Optional, Dict
+from fastapi import FastAPI, Request
+from typing import Dict
 import dmock.middleware.dispatcher as dis
-import requests
 
 app = FastAPI()
 
