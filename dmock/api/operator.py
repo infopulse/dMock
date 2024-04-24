@@ -3,6 +3,9 @@ from typing import Dict
 
 app = FastAPI()
 
+async def api_dispatcher():
+    ...
+
 def create_mock_static():
     ...
 
