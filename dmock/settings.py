@@ -7,7 +7,7 @@ load_dotenv()
 # VERSION = distribution('dMock').version
 # os.getenv()
 
-CACHE_TTL = os.getenv('CACHE_TTL_MINUTES', default=1440)
+CACHE_TTL = int(os.getenv('CACHE_TTL_MINUTES', default=1440))
 
 # ---- Logging ----
 LOGGING_CONFIG = {

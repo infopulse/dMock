@@ -1,8 +1,9 @@
+from tortoise import Tortoise
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 from dmock import settings
+from dmock.models.setup import set_data
 from aerich import Command
-
 
 app = FastAPI()
 register_tortoise(app=app,
@@ -13,10 +14,12 @@ register_tortoise(app=app,
 
 @app.on_event("startup")
 async def startup_event():
-    pass
-    # command = Command(tortoise_config=settings.DB_CONFIG, app='models')
-    # await command.init()
-    # await command.init_db(safe=True)
+    await set_data()
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await Tortoise.close_connections()
 
 
 @app.get("/")
