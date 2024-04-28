@@ -30,7 +30,7 @@ async def get_rules(mock: Mock = None) -> list[Rules]:
         return await Rules.all()
 
 
-@alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
+# @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
 async def get_matching_mocks(method: str, url: str,
                              body: str = '', json: dict or list = None, headers: dict = None) -> list[Mock]:
     mocks = await get_mocks()
@@ -169,5 +169,5 @@ def clear_all_caches():
     get_mock.cache_clear()
     get_mocks.cache_clear()
     get_rules.cache_clear()
-    get_matching_mocks.cache_clear()
+    # get_matching_mocks.cache_clear()
     logger.info("All caches cleared")
