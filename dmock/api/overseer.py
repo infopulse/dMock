@@ -5,6 +5,7 @@ import dmock.api.operator as op
 
 app = FastAPI()
 
+
 @app.middleware("http")
 async def intercept_requests(request: Request, call_next):
     method = request.method

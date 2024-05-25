@@ -17,7 +17,8 @@ dependencies = [
     "toml>=0.10.2",
     "pytest-asyncio >= 0.23.6",
     "python-dotenv >= 1.0.1",
-    "async-lru >= 2.0.4"]
+    "async-lru >= 2.0.4",
+    "aiofiles >= 23.2.1",]
 
 authors = [
     { name = "Oleksii Ostapov" },
