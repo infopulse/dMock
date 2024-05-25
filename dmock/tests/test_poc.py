@@ -1,7 +1,7 @@
 from tortoise.contrib import test
 from tortoise.contrib.test import initializer, finalizer
 from dmock.models.models import Mock, Rules, MockLog, Settings
-from dmock.middleware.manager import get_mock, create_mock, create_rule
+from dmock.middleware.mock_manager import get_mock
 
 
 class TestMock(test.TestCase):

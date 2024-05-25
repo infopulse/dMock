@@ -3,7 +3,7 @@ from dmock.settings import CACHE_TTL
 from dmock.models.models import Settings
 
 
-@alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
+# @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
 async def get_setting(key: str) -> str or None:
     s = await Settings.get_or_none(key=key)
     if s:
@@ -17,4 +17,4 @@ async def set_setting(key: str, value: str):
         await setting.save()
     else:
         await Settings.create(key=key, value=value)
-    get_setting.cache_clear()
+    # get_setting.cache_clear()

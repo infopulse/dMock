@@ -12,17 +12,17 @@ logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
 
 
-@alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
+# @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
 async def get_mock(id: int):
     return await Mock.get_or_none(id=id)
 
 
-@alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
+# @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
 async def get_mocks() -> list[Mock]:
     return await Mock.all()
 
 
-@alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
+# @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
 async def get_rules(mock: Mock = None) -> list[Rules]:
     if mock:
         return await mock.rules
@@ -166,8 +166,8 @@ async def log_request(mock: Mock, method: str, url: str, headers: dict, body: st
 
 
 def clear_all_caches():
-    get_mock.cache_clear()
-    get_mocks.cache_clear()
-    get_rules.cache_clear()
+    # get_mock.cache_clear()
+    # get_mocks.cache_clear()
+    # get_rules.cache_clear()
     # get_matching_mocks.cache_clear()
     logger.info("All caches cleared")

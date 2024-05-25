@@ -24,7 +24,7 @@ class TestMock(test.TestCase):
     async def test_rule_created(self):
         mock = await Mock.create(name="test2")
         rule = await Rules.create(mock=mock, type="1-default", operation="equals", key="GET")
-        self.assertEqual(rule.type, '1-method')
+        self.assertEqual(rule.type, '1-default')
 
     async def test_mock_log_created(self):
         mock = await Mock.create(name="test3")
