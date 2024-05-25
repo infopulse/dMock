@@ -7,6 +7,10 @@ build
 dMock.egg-info
 dist
 
+*.log
+
 .env
 
-.log
+*.log
+
+temp.py
