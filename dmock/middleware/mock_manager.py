@@ -76,10 +76,13 @@ async def create_mock_manually(name: str,
                                  labels=labels, delay=delay,
                                  is_default=is_default, priority=priority,
                                  method=method, url=url, **kwargs)
+        len_rules = 0
         if rules:
+            len_rules = len(rules)
             for rule in rules:
                 await Rules.create(mock=mock, **rule)
-    logger.info(f"Mock {name} created. id: {mock.id}, rules: {len(rules)}")
+
+    logger.info(f"Mock {name} created. id: {mock.id}, rules: {len_rules}")
     clear_all_caches()
     return mock
 
@@ -114,7 +117,9 @@ async def create_rule(mock: Mock,
     return await Rules.create(mock=mock, type=type, operation=operation, key=key, is_active=is_active)
 
 
-async def edit_mock(mock: Mock, **kwargs):
+async def edit_mock(mock: Mock, **kwargs) -> Mock:
+    if mock.is_default:
+        raise ValueError("Cannot edit default mock")
     for key in kwargs.keys():
         if key in ['method', 'is_action', 'is_default', 'status']:
             raise ValueError(f"Cannot change {key} of mock")
@@ -128,8 +133,13 @@ async def edit_mock(mock: Mock, **kwargs):
     return mock
 
 
+async def get_rule(id: int):
+    return await Rules.get_or_none(id=id)
+
+
 async def edit_rule(rule: Rules, **kwargs):
-    if rule.mock.is_default:
+    mock = await rule.mock
+    if mock.is_default:
         raise ValueError("Cannot edit rule of default mock")
     logger.info(f"Editing rule {rule.id} of mock {rule.mock.id}: {rule.mock.name}")
     async with transactions.in_transaction():
@@ -139,6 +149,13 @@ async def edit_rule(rule: Rules, **kwargs):
     logger.info(f"Rule {rule.id} edited")
     clear_all_caches()
     return rule
+
+
+async def delete_mock_by_id(id: int):
+    mock = await get_mock(id)
+    if not mock:
+        raise (f"Mock {id} not found")
+    await delete_mock(mock)
 
 
 async def delete_mock(mock: Mock):
@@ -151,7 +168,8 @@ async def delete_mock(mock: Mock):
 
 
 async def delete_rule(rule: Rules):
-    if rule.mock.is_default:
+    mock = await rule.mock
+    if mock.is_default:
         raise ValueError("Cannot delete rule of default mock")
     logger.info(f"Deleting rule {rule.id} of mock {rule.mock.id}: {rule.mock.name}")
     await rule.delete()
