@@ -26,6 +26,30 @@ class Mock(Model):
 
     requests_count = fields.IntField(default=0)
 
+    async def to_dict(self) -> dict:
+        rules = await self.rules
+        logs = await self.logs
+        return {
+            "id": self.id,
+            "name": self.name,
+            "status": self.status,
+            "labels": self.labels,
+            "delay": self.delay,
+            # "isDefault": self.is_default,
+            "priority": self.priority,
+            "method": self.method,
+            "url": self.url,
+            "responseHeaders": self.response_headers,
+            "responseBody": self.response_body,
+            "statusCode": self.status_code,
+            "isAction": self.is_action,
+            "action": self.action,
+            "createdAt": self.created_at,
+            "requestsCount": self.requests_count,
+            "rulesNumber": len(rules),
+            "logsNumber": len(logs)
+        }
+
     class Meta:
         table = "mock"
         ordering = ["id"]
@@ -39,6 +63,17 @@ class Rules(Model):
     type = fields.TextField()  # 1-default, 2-url, 3-json, 3-body, 4-headers. makes priority
     operation = fields.TextField()  # contains, in, equals, regex, starts_with, ends_with
     key = fields.TextField()
+
+    async def to_dict(self) -> dict:
+        mock = await self.mock
+        return {
+            "id": self.id,
+            "mockId": mock.id,
+            "is_active": self.is_active,
+            "type": self.type,
+            "operation": self.operation,
+            "key": self.key,
+        }
 
     class Meta:
         table = "rules"
@@ -59,6 +94,21 @@ class MockLog(Model):
     status_code = fields.IntField(default=200)
     timestamp = fields.DatetimeField(auto_now_add=True)
     mocks_matched_ids = fields.JSONField(default=[])
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "mockId": self.mock.id,
+            "requestMethod": self.request_method,
+            "requestUrl": self.request_url,
+            "requestHeaders": self.request_headers,
+            "requestBody": self.request_body,
+            "responseHeaders": self.response_headers,
+            "responseBody": self.response_body,
+            "statusCode": self.status_code,
+            "timestamp": self.timestamp,
+            "mocksMatchedIds": self.mocks_matched_ids,
+        }
 
     class Meta:
         table = "mock_log"
