@@ -58,6 +58,7 @@ async def create_mock_api(mock_request: MockIn, request: Request):
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
 
+
 @router.delete("/api/mocks/{mock_id}")
 async def delete_mock_api(mock_id: int):
     try:
@@ -70,9 +71,14 @@ async def delete_mock_api(mock_id: int):
 @router.get("/api/mocks/{mock_id}")
 async def get_mock_api(mock_id: int):
     mock = await get_mock(mock_id)
+    rules = await mock.rules
     if mock is None:
         return JSONResponse(status_code=404, content={"error": "Mock not found"})
-    return await mock.to_dict()
+    response = {
+        **await mock.to_dict(),
+        "rules": [await rule.to_dict() for rule in rules]
+    }
+    return response
 
 
 @router.put("/api/mocks/{mock_id}")
@@ -80,8 +86,11 @@ async def update_mock_api(mock_request: MockIn, mock_id: int):
     mock = await get_mock(mock_id)
     if mock is None:
         return JSONResponse(status_code=404, content={"error": "Mock not found"})
-    mock = await edit_mock(mock, **mock_request.dict())
-    return await mock.to_dict()
+    try:
+        mock = await edit_mock(mock, **mock_request.dict())
+        return await mock.to_dict()
+    except Exception as e:
+        return JSONResponse(status_code=400, content={"error": str(e)})
 
 
 @router.post("/api/mocks/{mock_id}/rules")
