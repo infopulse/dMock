@@ -60,22 +60,14 @@ async def get_top_priority_mock(mocks: list[Mock]) -> Mock:
     return max(mocks, key=lambda x: get_priority(x))
 
 
-async def create_mock_manually(name: str,
-                               status: str = "draft",
-                               labels: list = None,
-                               delay: int = 0,
-                               is_default: bool = False,
-                               priority: int = None,
-                               method: str = None,
-                               url: str = None,
-                               rules: list = None,
-                               **kwargs) -> Mock:
+async def create_mock_manually( **kwargs) -> Mock:
+    Mock.check_static_dynamic(**kwargs)
+    name = kwargs.get('name')
+    rules = kwargs.get('rules')
+    del kwargs['rules']
     logger.info(f"Creating mock {name}")
     async with transactions.in_transaction():
-        mock = await Mock.create(name=name, status=status,
-                                 labels=labels, delay=delay,
-                                 is_default=is_default, priority=priority,
-                                 method=method, url=url, **kwargs)
+        mock = await Mock.create(**kwargs)
         len_rules = 0
         if rules:
             len_rules = len(rules)
@@ -120,14 +112,9 @@ async def create_rule(mock: Mock,
 async def edit_mock(mock: Mock, **kwargs) -> Mock:
     if mock.is_default:
         raise ValueError("Cannot edit default mock")
-    for key in kwargs.keys():
-        if key in ['method', 'is_action', 'is_default', 'status']:
-            raise ValueError(f"Cannot change {key} of mock")
     logger.info(f"Editing mock {mock.id}: {mock.name}")
     async with transactions.in_transaction():
-        for key, value in kwargs.items():
-            setattr(mock, key, value)
-        await mock.save()
+        await mock.update(**kwargs)
     logger.info(f"Mock {mock.id}: {mock.name} edited")
     clear_all_caches()
     return mock

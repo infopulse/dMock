@@ -4,6 +4,7 @@ from tortoise import fields
 
 class Mock(Model):
     # service
+    _not_null_fields = ["id", "name", "status", "delay", "is_action"]
     id = fields.IntField(pk=True, generated=True)
     name = fields.TextField()
     status = fields.TextField(default='draft')  ## draft, active, inactive
@@ -23,12 +24,11 @@ class Mock(Model):
     is_action = fields.BooleanField(default=False)
     action = fields.TextField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
-
+    updated_at = fields.DatetimeField(auto_now=True)
     requests_count = fields.IntField(default=0)
 
     async def to_dict(self) -> dict:
         rules = await self.rules
-        logs = await self.logs
         return {
             "id": self.id,
             "name": self.name,
@@ -45,10 +45,42 @@ class Mock(Model):
             "isAction": self.is_action,
             "action": self.action,
             "createdAt": self.created_at,
+            "updatedAt": self.updated_at,
             "requestsCount": self.requests_count,
-            "rulesNumber": len(rules),
-            "logsNumber": len(logs)
+            "rulesNumber": len(rules)
         }
+
+    async def update(self, **kwargs):
+        self.check_static_dynamic_update(**kwargs)
+        if 'rules' in kwargs.keys():
+            del kwargs['rules']
+        for field in self._not_null_fields:
+            if field in kwargs.keys() and kwargs.get(field) is None:
+                kwargs.pop(field)
+        await self.update_from_dict(kwargs)
+        await self.save()
+        pass
+
+    @staticmethod
+    def check_static_dynamic(**kwargs):
+        match kwargs.get('is_action'):
+            case True:
+                if kwargs.get('action') is None:
+                    raise ValueError("Action is required")
+            case False:
+                if kwargs.get('status_code') is None:
+                    raise ValueError("At least status code is required")
+            case None:
+                raise ValueError("isAction parameter is required")
+
+    def check_static_dynamic_update(self, **kwargs):
+        is_action = kwargs.get('is_action') or self.is_action
+        if is_action:
+            if kwargs.get('action') is None and self.action is None:
+                raise ValueError("Action is required")
+        else:
+            if kwargs.get('status_code') is None and self.status_code is None:
+                raise ValueError("At least status code is required")
 
     class Meta:
         table = "mock"
