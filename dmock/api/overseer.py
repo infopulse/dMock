@@ -13,6 +13,6 @@ async def mock_dispatcher(request: Request, path: str):
     body = raw_body.decode('utf-8') if raw_body else None
 
     return await dispatch_request(method=request.method,
-                                  url=str(request.url),
+                                  url=str(path),
                                   headers=dict(request.headers),
                                   body=body)
