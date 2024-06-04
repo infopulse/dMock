@@ -1,24 +1,24 @@
 import asyncio
 import logging.config
 from dmock.middleware.mock_manager import (get_matching_mocks, log_request,
-                                           get_top_priority_mock, create_mock_automatically)
+                                           get_top_priority_mock, create_mock_automatically, has_duplicates)
 from dmock.settings import LOGGING_CONFIG
 
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
 
 
-async def dispatch_request(method: str, url: str, headers: dict, body: str) -> dict:
+async def dispatch_request(method: str, url: str, headers: dict, body: str, query_params: dict) -> dict:
     logger.info(f"Dispatching request {method} {url}")
     # TODO add json parameter
-    mocks = await get_matching_mocks(method, url, body, headers)
+    mocks = await get_matching_mocks(method, url, body, headers, query_params)
     mock_ids = [m.id for m in mocks]
     logger.debug(f"Matching mocks: {mock_ids}")
     response_mock = await get_top_priority_mock(mocks)
     response_mock.requests_count += 1
     await response_mock.save()
     logger.info(f"Selected mock: {response_mock.id}. {response_mock.name}")
-    if response_mock.is_default:
+    if response_mock.is_default and not await has_duplicates(method, url):
         await create_mock_automatically(response_mock, method, url, headers, body)
 
     await asyncio.sleep(response_mock.delay)

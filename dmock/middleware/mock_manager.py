@@ -32,17 +32,21 @@ async def get_rules(mock: Mock = None) -> list[Rules]:
 
 # @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
 async def get_matching_mocks(method: str, url: str,
-                             body: str = '', json: dict or list = None, headers: dict = None) -> list[Mock]:
+                             body: str = '', json: dict or list = None,
+                             headers: dict = None, query_params: dict = None) -> list[Mock]:
     mocks = await get_mocks()
     result = list()
     for mock in mocks:
-        if mock.method == method and mock.status == "active":
+        if mock.is_default:
+            result.append(mock)
+            continue
+        if method in [mock.method, "ANY"] and mock.status == "active":
             rules = await get_rules(mock)
             mock_ok = True
             for rule in rules:
                 if not rule.is_active:
                     continue
-                if not match_rule(rule, url, body, json, headers):
+                if not match_rule(rule, url, body, json, headers, query_params):
                     mock_ok = False
                     break
             if mock_ok:
@@ -86,17 +90,27 @@ async def create_mock_automatically(mock: Mock,
                                     request_body: str = None,
                                     **kwargs) -> Mock:
     # TODO search for similar mocks
-
+    default_status_code = 200
     logger.info(f"Creating mock for {method} {url}")
     async with transactions.in_transaction():
-        a_mock = await Mock.create(name=f"{method} {url}", method=method, url=url, **kwargs)
+        a_mock = await Mock.create(name=f"{method} {url}", method=method,
+                                   url=url, status_code=default_status_code,
+                                   labels=["auto"], **kwargs)
         # logging record for new potential mock
         await log_request(a_mock, method, url, request_headers, request_body, [mock.id])
 
-    logger.info(f"Mock created. id: {mock.id}")
+    logger.info(f"Mock created. id: {a_mock.id}")
     clear_all_caches()
     return mock
 
+
+async def has_duplicates(method: str, url: str):
+    mocks = await get_mocks()
+    for mock in mocks:
+        if mock.method == method and mock.url == url:
+            logger.debug(f"Mock {mock.id} already exists for {method} {url}. Skipping automatic mock creation")
+            return True
+    return False
 
 async def create_rule(mock: Mock,
                       type: str,

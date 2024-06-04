@@ -4,7 +4,7 @@ from dmock.models.models import Mock, Rules
 from dmock.middleware.json_transform import flatten_json, get_wild_cards, is_subset, clear_wild_keys
 
 
-def match_rule(rule: Rules, url: str = '', body: str = '', json: dict or list = None, headers: dict = None) -> bool:
+def match_rule(rule: Rules, url: str = '', body: str = '', json: dict or list = None, headers: dict = None, query_params: dict = None) -> bool:
     match rule.type:
         case "1-default":
             return True
@@ -16,6 +16,8 @@ def match_rule(rule: Rules, url: str = '', body: str = '', json: dict or list = 
             return _rule_json_compare(rule, json)
         case "4-header":
             return _rule_json_compare(rule, headers)
+        case "5-query":
+            return _rule_json_compare(rule, query_params)
         case _:
             return False
 
