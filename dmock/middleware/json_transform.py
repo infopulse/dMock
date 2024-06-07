@@ -1,7 +1,6 @@
 import json
 
-
-def flatten_json(json_obj: dict or list, name: str = '', sep: str = '.') -> dict:
+def flatten_json(json_obj: dict or list, name: str = '', sep: str = '.') -> dict:                                                                               # type: ignore
     result = dict()
     if isinstance(json_obj, dict):
         for key, value in json_obj.items():

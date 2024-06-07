@@ -4,7 +4,7 @@ from dmock.models.models import Settings
 
 
 # @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
-async def get_setting(key: str) -> str or None:
+async def get_setting(key: str) -> str or None:                                                                                                                         # type: ignore
     s = await Settings.get_or_none(key=key)
     if s:
         return s.value

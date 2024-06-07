@@ -32,7 +32,7 @@ async def get_rules(mock: Mock = None) -> list[Rules]:
 
 # @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
 async def get_matching_mocks(method: str, url: str,
-                             body: str = '', json: dict or list = None, headers: dict = None) -> list[Mock]:
+                             body: str = '', json: dict or list = None, headers: dict = None) -> list[Mock]:                                    # type: ignore
     mocks = await get_mocks()
     result = list()
     for mock in mocks:

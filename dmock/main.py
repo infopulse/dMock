@@ -3,12 +3,18 @@ from tortoise import Tortoise
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 from tortoise.contrib.fastapi import register_tortoise
+
+import sys
+sys.path.append("E:\dMock")
+
 from dmock import settings
 from dmock.models.setup import set_data
 from aerich import Command
 from pydantic import BaseModel
 from api import operator, overseer
 from middleware.dispatcher import dispatch_request
+
+
 
 app = FastAPI()
 app.include_router(operator.router)
@@ -32,7 +38,7 @@ async def shutdown_event():
 
 @app.get("/")
 async def root():
-    return FileResponse('ui/html/index.html', media_type='text/html')
+    return FileResponse('dmock/ui/html/index.html', media_type='text/html')
 
 
 class Item(BaseModel):
