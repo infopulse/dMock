@@ -2,11 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>dMock - fast mock for QAs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/style.css">
+    <script type='text/javascript' src="assets/script.js"></script>
+    <title>Fetch API Example</title>
+
 </head>
 <body>
-    <h1>dMock - fast mock for QAs</h1>
-    <p>Use dMock to create mock servers for your tests.</p>
-
+<h1>Fetch API Example</h1>
+<div id="data-table" class="table"></div>
+<script>
+    const connector = new ApiConnector();
+    connector.listMocks().then(data => {
+        displayData(data);
+    });
+</script>
 </body>
 </html>

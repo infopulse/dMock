@@ -2,6 +2,7 @@ from typing import Any
 from tortoise import Tortoise
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from tortoise.contrib.fastapi import register_tortoise
 from dmock import settings
 from dmock.models.setup import set_data
@@ -11,6 +12,7 @@ from api import operator, overseer
 from middleware.dispatcher import dispatch_request
 
 app = FastAPI()
+app.mount('/assets', StaticFiles(directory='ui/assets'), name='assets')
 app.include_router(operator.router)
 app.include_router(overseer.router)
 
