@@ -18,7 +18,7 @@ class Mock(Model):
     url = fields.TextField(null=True)
 
     response_headers = fields.JSONField(null=True)
-    response_body = fields.TextField(null=True)
+    response_body = fields.BinaryField(null=True)
     status_code = fields.IntField(null=True)
 
     is_action = fields.BooleanField(default=False)
