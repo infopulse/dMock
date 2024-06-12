@@ -21,6 +21,30 @@ class TestMock(test.TestCase):
         retrieved_mock = await Mock.get(id=mock.id)
         self.assertEqual(retrieved_mock.name, 'test')
 
+    async def test_mock_created_with_binary_body(self):
+        mock = await Mock.create(name="test2", status="active", response_body=b"hello world")
+        self.assertEqual(mock.response_body, b"hello world")
+
+    async def test_mock_created_setup(self):
+        mock = await Mock.create(id=111, name="Master mock (default)",
+                                 method="ANY", url="/",
+                                 response_body=b"hello world",
+                                 response_headers={"Content-Type": "text/plain"},
+                                 status_code=200, is_default=True,
+                                 labels=["default"], status="active")
+        self.assertEqual(mock.name, 'Master mock (default)')
+        self.assertEqual(mock.id, 111)
+
+    # async def test_mock_get_or_create_setup(self):
+    #     mock = await Mock.get_or_create(id=1111, name="Master mock (default)",
+    #                                     method="ANY", url="/",
+    #                                     response_body=b"hello world",
+    #                                     response_headers={"Content-Type": "text/plain"},
+    #                                     status_code=200, is_default=True,
+    #                                     labels=["default"], status="active")
+    #     self.assertEqual(mock[0].name, 'Master mock (default)')
+    #     self.assertEqual(mock[0].id, 1111)
+
     async def test_rule_created(self):
         mock = await Mock.create(name="test2")
         rule = await Rules.create(mock=mock, type="1-default", operation="equals", key="GET")
