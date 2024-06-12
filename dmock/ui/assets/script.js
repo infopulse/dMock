@@ -1,3 +1,152 @@
+import {ApiConnector} from './connector.js';
+import {Grid, h} from "./gridjs.6.2.0.js";
+
+// events
+document.addEventListener('DOMContentLoaded', () => {
+    doTheData();
+
+    // Get the modal
+    const modal = document.getElementById("newEntityModal");
+
+    // Get the button that opens the modal
+    const btn = document.getElementById("newEntityButton");
+
+    // Get the <span> element that closes the modal
+    const span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks the button, open the modal
+    btn.onclick = () => {
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = () => {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Handle form submission
+    const form = document.getElementById("newEntityForm");
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const entityName = document.getElementById("entityName").value;
+        const entityDescription = document.getElementById("entityDescription").value;
+
+        console.log("Entity Name:", entityName);
+        console.log("Entity Description:", entityDescription);
+
+        // Here you would typically send the form data to the server
+        // For example, using fetch:
+        /*
+        fetch('/your-endpoint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: entityName,
+                description: entityDescription
+            })
+        }).then(response => response.json())
+          .then(data => {
+              console.log('Success:', data);
+          })
+          .catch((error) => {
+              console.error('Error:', error);
+          });
+        */
+
+        // Close the modal after submitting the form
+        modal.style.display = "none";
+    });
+});
+
+
+function doTheData() {
+    new Grid({
+            columns: [
+                "Id",
+                "Method",
+                "Name",
+                "URL",
+                {
+                    name: "Status",
+                    formatter: (cell) => {
+                        return h('span',
+                            {
+                                className: 'mockStatus ' + cell,
+                            },
+                            cell);
+                    }
+                },
+                "Labels",
+                {
+                    name: "Created At",
+                    formatter: (cell) => convertDate(cell)
+                },
+                {
+                    name: "Updated At",
+                    formatter: (cell) => convertDate(cell)
+                },
+                "Request Count",
+                {
+                    name: 'Edit',
+                    formatter: (cell, row) => {
+                        return h('button',
+                            {
+                                // TODO: add cool styles
+                                className: 'py-2 mb-4 px-4 border rounded-md text-white bg-blue-600',
+                                onClick: () => window.location.href = `/ui/mocks/${row.cells[0].data}`,
+                            },
+                            'Edit');
+                    }
+                },
+            ],
+            search: true,
+            sort: true,
+            resizable: true,
+            server: {
+                url: '/api/mocks',
+                then:
+                    data => data.mocks.map(mock => [
+                        mock.id,
+                        mock.method,
+                        mock.name,
+                        mock.url,
+                        mock.status,
+                        mock.labels,
+                        mock.createdAt,
+                        mock.updatedAt,
+                        mock.requestsCount]),
+            }
+        }
+    ).render(document.getElementById("wrapper"));
+}
+
+// const connector = new ApiConnector();
+// connector.listMocks().then(data => {
+//     displayData(data);
+// });
+
+function convertDate(isoString) {
+    const date = new Date(isoString);
+    const locale = navigator.language || navigator.languages[0]
+    const format = {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false
+    };
+    return date.toLocaleString(locale, format);
+}
+
 function displayData(data) {
     const dataTable = document.getElementById('data-table');
     const mocks = data.mocks;
@@ -48,102 +197,4 @@ function mockList() {
     api.listMocks().then(data => {
         displayData(data);
     });
-}
-
-class ApiConnector {
-    constructor() {
-    }
-
-    async listMocks() {
-        return await fetch('/api/mocks').then(response => response.json());
-    }
-
-    async getMock(id) {
-        return await fetch(`/api/mocks/${id}`).then(response => response.json());
-    }
-
-    async getMockRules(id) {
-        return await fetch(`/api/mocks/${id}/rules`).then(response => response.json());
-    }
-
-    async getMockLog(id) {
-        return await fetch(`/api/mocks/${id}/logs`).then(response => response.json());
-    }
-
-    async getMockRule(id, ruleId) {
-        return await fetch(`/api/mocks/${id}/rules/${ruleId}`).then(response => response.json());
-    }
-
-    async createMock(mock) {
-        return await fetch('/api/mocks', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(mock)
-        }).then(response => response.json());
-    }
-
-    async deleteMock(id) {
-        return await fetch(`/api/mocks/${id}`, {
-            method: 'DELETE'
-        }).then(response => response.json());
-    }
-
-    async updateMock(mock) {
-        return await fetch(`/api/mocks/${mock.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(mock)
-        }).then(response => response.json());
-    }
-
-    async createMockRule(id, rule) {
-        return await fetch(`/api/mocks/${id}/rules`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(rule)
-        }).then(response => response.json());
-    }
-
-    async updateMockRule(id, rule) {
-        return await fetch(`/api/mocks/${id}/rules/${rule.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(rule)
-        }).then(response => response.json());
-    }
-
-    async deleteMockRule(id, ruleId) {
-        return await fetch(`/api/mocks/${id}/rules/${ruleId}`, {
-            method: 'DELETE'
-        }).then(response => response.json());
-    }
-
-    async setMockStatus(id, status) {
-        return await fetch(`/api/mocks/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({status: status})
-        }).then(response => response.json());
-    }
-
-    async setMockRuleStatus(id, ruleId, isActive) {
-        return await fetch(`/api/mocks/${id}/rules/${ruleId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({isActive: isActive})
-        }).then(response => response.json());
-    }
-
 }

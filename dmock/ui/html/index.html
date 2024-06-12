@@ -4,18 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/style.css">
-    <script type='text/javascript' src="assets/script.js"></script>
-    <title>Fetch API Example</title>
+    <link rel="stylesheet" href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css"/>
+    <script type="module" src="assets/script.js"></script>
+    <title>dMock</title>
 
 </head>
 <body>
 <h1>Fetch API Example</h1>
-<div id="data-table" class="table"></div>
-<script>
-    const connector = new ApiConnector();
-    connector.listMocks().then(data => {
-        displayData(data);
-    });
-</script>
+<div id="wrapper"></div>
+
+<h2>Create New Entity</h2>
+<button id="newEntityButton">New</button>
+
+<!-- The Modal -->
+<div id="newEntityModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>New Entity Details</h2>
+        <form id="newMock">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="mock name"><br>
+            <label for="method">Method:</label><br>
+            <select id="method" name="method">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="PATCH">PATCH</option>
+                <option value="DELETE">DELETE</option>
+                <option value="HEAD">HEAD</option>
+                <option value="OPTION">OPTION</option>
+            </select> <br>
+            <label for="status">Status:</label><br>
+            <select id="status" name="status">
+                <option value="draft" selected="selected">draft</option>
+                <option value="active">active</option>
+                <option value="inactive">inactive</option>
+            </select> <br>
+            <label for="labels">Labels:</label><br>
+            <input type="text" id="labels" name="labels"> <br>
+            <label for="url">URL:</label><br>
+            <input type="text" id="url" name="url"> <br>
+            <label for="delay">Delay:</label><br>
+            <input type="number" id="delay" name="delay"> <br>
+            <label for="statusCode">Status Code:</label><br>
+            <input type="text" id="statusCode" name="statusCode"> <br>
+            <label for="responseHeraders">Response Headers:</label><br>
+            <textarea id="responseHeraders" name="responseHeraders" placeholder='{"Content-Type": "text/plain"}'></textarea> <br>
+            <label for="responseBody">Response Body:</label><br>
+            <textarea id="responseBody" name="responseBody"></textarea> <br>
+            <label for="action">Action:</label><br>
+            <textarea id="action" name="action"></textarea> <br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+</div>
+
 </body>
 </html>
