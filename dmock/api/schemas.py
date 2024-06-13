@@ -44,6 +44,6 @@ class MockIn(BaseModel):
 
     @validator('method')
     def validate_method(cls, value):
-        if value not in ["GET", "HEAD, ""POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"]:
+        if value not in ["GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"]:
             raise ValueError("Invalid method")
         return value

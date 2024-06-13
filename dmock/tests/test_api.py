@@ -105,3 +105,61 @@ class TestMock(test.TestCase):
         self.assertEqual(response.status_code, 201)
         mock = await Mock.get(id=response.json()['id'])
         self.assertEqual(mock.name, "GET-MOCK-03")
+
+    async def test__create_mock_api_post(self):
+        request = {
+            "name": "GET-MOCK-04",
+            "status": "draft",
+            "labels": [
+                "test", "first"
+            ],
+            "delay": 0,
+            "method": "POST",
+            "url": "/post",
+            "responseHeaders": None,
+            "responseBody": None,
+            "statusCode": 201
+        }
+
+        response = self.client.post('/api/mocks', json=request)
+        self.assertEqual(response.status_code, 201)
+        mock = await Mock.get(id=response.json()['id'])
+        self.assertEqual(mock.name, "GET-MOCK-04")
+
+    async def test__create_mock_api_patch(self):
+        request = {
+            "name": "GET-MOCK-05",
+            "status": "draft",
+            "labels": [
+                "test", "first"
+            ],
+            "delay": 0,
+            "method": "PATCH",
+            "url": "/post",
+            "responseHeaders": None,
+            "responseBody": None,
+            "statusCode": 201
+        }
+
+        response = self.client.post('/api/mocks', json=request)
+        self.assertEqual(response.status_code, 201)
+        mock = await Mock.get(id=response.json()['id'])
+        self.assertEqual(mock.name, "GET-MOCK-05")
+
+    async def test__create_mock_api_invalid_method(self):
+        request = {
+            "name": "GET-MOCK-05",
+            "status": "draft",
+            "labels": [
+                "test", "first"
+            ],
+            "delay": 0,
+            "method": "TEST",
+            "url": "/post",
+            "responseHeaders": None,
+            "responseBody": None,
+            "statusCode": 201
+        }
+
+        response = self.client.post('/api/mocks', json=request)
+        self.assertEqual(response.status_code, 422)
