@@ -1,10 +1,10 @@
 import re
 import json as js
-from dmock.models.models import Mock, Rules
+from dmock.models.models import Mock, Rule
 from dmock.middleware.json_transform import flatten_json, get_wild_cards, is_subset, clear_wild_keys
 
 
-def match_rule(rule: Rules, url: str = '', body: str = '', json: dict or list = None, headers: dict = None, query_params: dict = None) -> bool:
+def match_rule(rule: Rule, url: str = '', body: str = '', json: dict or list = None, headers: dict = None, query_params: dict = None) -> bool:
     match rule.type:
         case "1-default":
             return True
@@ -22,7 +22,7 @@ def match_rule(rule: Rules, url: str = '', body: str = '', json: dict or list = 
             return False
 
 
-def _rule_str_compare(rule: Rules, url_or_body: str) -> bool:
+def _rule_str_compare(rule: Rule, url_or_body: str) -> bool:
     match rule.operation:
         case "equals":
             return rule.key == url_or_body
@@ -44,7 +44,7 @@ def _rule_str_compare(rule: Rules, url_or_body: str) -> bool:
             return False
 
 
-def _rule_json_compare(rule: Rules, data: dict or list) -> bool:
+def _rule_json_compare(rule: Rule, data: dict or list) -> bool:
     rule_json = js.loads(rule.key)
     flat_request = flatten_json(data)
     flat_rule = flatten_json(rule_json)

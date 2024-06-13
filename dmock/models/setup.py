@@ -1,7 +1,7 @@
 import logging.config
 from tortoise import transactions
 from tortoise.exceptions import DoesNotExist
-from dmock.models.models import Mock, MockLog, Rules, Settings
+from dmock.models.models import Mock, MockLog, Rule, Settings
 from dmock.settings import LOGGING_CONFIG
 
 logging.config.dictConfig(LOGGING_CONFIG)
@@ -20,6 +20,6 @@ async def set_data() -> Mock:
                                              response_headers={"Content-Type": "text/plain"},
                                              status_code=200, is_default=True,
                                              labels=["default"], status="active")
-            await Rules.get_or_create(mock=default_mock, type="1-default",
-                                      operation="any", key="", is_active=True)
+            await Rule.get_or_create(mock=default_mock, type="1-default",
+                                     operation="any", key="", is_active=True)
     return default_mock

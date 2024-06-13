@@ -88,7 +88,7 @@ class Mock(Model):
 
 
 # for static mock data
-class Rules(Model):
+class Rule(Model):
     id = fields.IntField(pk=True, generated=True)
     mock = fields.ForeignKeyField("models.Mock", related_name="rules", on_delete=fields.CASCADE)
     is_active = fields.BooleanField(default=True)

@@ -1,6 +1,6 @@
 from tortoise.contrib import test
 from tortoise.contrib.test import initializer, finalizer
-from dmock.models.models import Mock, Rules, MockLog, Settings
+from dmock.models.models import Mock, Rule, MockLog, Settings
 
 
 class TestMock(test.TestCase):
@@ -13,8 +13,8 @@ class TestMock(test.TestCase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.the_mock = await Mock.create(name="with_rules", status="active")
-        await Rules.create(mock=self.the_mock, type="2-url", operation="equals", key="/test")
-        await Rules.create(mock=self.the_mock, type="4-header", operation="equals", key="hello", value="world")
+        await Rule.create(mock=self.the_mock, type="2-url", operation="equals", key="/test")
+        await Rule.create(mock=self.the_mock, type="4-header", operation="equals", key="hello", value="world")
 
     async def test_mock_created(self):
         mock = await Mock.create(name="test", status="draft")
@@ -47,7 +47,7 @@ class TestMock(test.TestCase):
 
     async def test_rule_created(self):
         mock = await Mock.create(name="test2")
-        rule = await Rules.create(mock=mock, type="1-default", operation="equals", key="GET")
+        rule = await Rule.create(mock=mock, type="1-default", operation="equals", key="GET")
         self.assertEqual(rule.type, '1-default')
 
     async def test_mock_log_created(self):

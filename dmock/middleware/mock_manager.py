@@ -5,29 +5,30 @@ from async_lru import alru_cache
 from h11._abnf import status_code
 from tortoise import transactions
 from dmock.settings import CACHE_TTL, LOGGING_CONFIG
-from dmock.models.models import Mock, Rules, MockLog
+from dmock.models.models import Mock, Rule, MockLog
 from dmock.middleware.matchers import match_rule
+from dmock.misc.misc import str_to_bytes
 
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
 
 
-# @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
+@alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
 async def get_mock(id: int):
     return await Mock.get_or_none(id=id)
 
 
-# @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
+@alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
 async def get_mocks() -> list[Mock]:
     return await Mock.all()
 
 
 # @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
-async def get_rules(mock: Mock = None) -> list[Rules]:
+async def get_rules(mock: Mock = None) -> list[Rule]:
     if mock:
         return await mock.rules
     else:
-        return await Rules.all()
+        return await Rule.all()
 
 
 # @alru_cache(maxsize=None, ttl=60 * CACHE_TTL)
@@ -42,14 +43,17 @@ async def get_matching_mocks(method: str, url: str,
             continue
         if method in [mock.method, "ANY"] and mock.status == "active":
             rules = await get_rules(mock)
-            mock_ok = True
+            mock_ok_counter = 0
+            active_rules = 0
             for rule in rules:
                 if not rule.is_active:
                     continue
-                if not match_rule(rule, url, body, json, headers, query_params):
-                    mock_ok = False
+                active_rules += 1
+                if match_rule(rule, url, body, json, headers, query_params):
+                    mock_ok_counter += 1
+                else:
                     break
-            if mock_ok:
+            if mock_ok_counter > 0 and mock_ok_counter == active_rules:
                 result.append(mock)
     return result
 
@@ -68,6 +72,8 @@ async def create_mock_manually( **kwargs) -> Mock:
     Mock.check_static_dynamic(**kwargs)
     name = kwargs.get('name')
     rules = kwargs.get('rules')
+    if kwargs.get('response_body') is not None:
+        kwargs['response_body'] = str_to_bytes(kwargs['response_body'])
     del kwargs['rules']
     logger.info(f"Creating mock {name}")
     async with transactions.in_transaction():
@@ -76,7 +82,7 @@ async def create_mock_manually( **kwargs) -> Mock:
         if rules:
             len_rules = len(rules)
             for rule in rules:
-                await Rules.create(mock=mock, **rule)
+                await Rule.create(mock=mock, **rule)
 
     logger.info(f"Mock {name} created. id: {mock.id}, rules: {len_rules}")
     clear_all_caches()
@@ -120,13 +126,15 @@ async def create_rule(mock: Mock,
                       ):
     if mock.is_default:
         raise ValueError("Cannot add rule to default mock")
-    return await Rules.create(mock=mock, type=type, operation=operation, key=key, is_active=is_active)
+    return await Rule.create(mock=mock, type=type, operation=operation, key=key, is_active=is_active)
 
 
 async def edit_mock(mock: Mock, **kwargs) -> Mock:
     if mock.is_default:
         raise ValueError("Cannot edit default mock")
     logger.info(f"Editing mock {mock.id}: {mock.name}")
+    if kwargs.get('response_body') is not None:
+        kwargs['response_body'] = str_to_bytes(kwargs['response_body'])
     async with transactions.in_transaction():
         await mock.update(**kwargs)
     logger.info(f"Mock {mock.id}: {mock.name} edited")
@@ -135,10 +143,10 @@ async def edit_mock(mock: Mock, **kwargs) -> Mock:
 
 
 async def get_rule(id: int):
-    return await Rules.get_or_none(id=id)
+    return await Rule.get_or_none(id=id)
 
 
-async def edit_rule(rule: Rules, **kwargs):
+async def edit_rule(rule: Rule, **kwargs):
     mock = await rule.mock
     if mock.is_default:
         raise ValueError("Cannot edit rule of default mock")
@@ -168,7 +176,7 @@ async def delete_mock(mock: Mock):
     clear_all_caches()
 
 
-async def delete_rule(rule: Rules):
+async def delete_rule(rule: Rule):
     mock = await rule.mock
     if mock.is_default:
         raise ValueError("Cannot delete rule of default mock")
@@ -185,8 +193,8 @@ async def log_request(mock: Mock, method: str, url: str, headers: dict, body: st
 
 
 def clear_all_caches():
-    # get_mock.cache_clear()
-    # get_mocks.cache_clear()
+    get_mock.cache_clear()
+    get_mocks.cache_clear()
     # get_rules.cache_clear()
     # get_matching_mocks.cache_clear()
     logger.info("All caches cleared")

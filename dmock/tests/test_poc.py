@@ -1,6 +1,6 @@
 from tortoise.contrib import test
 from tortoise.contrib.test import initializer, finalizer
-from dmock.models.models import Mock, Rules, MockLog, Settings
+from dmock.models.models import Mock, Rule, MockLog, Settings
 from dmock.middleware.mock_manager import get_mock
 
 
