@@ -1,6 +1,6 @@
 from tortoise.models import Model
 from tortoise import fields
-
+from dmock.misc.misc import nice_body_repr
 
 class Mock(Model):
     # service
@@ -40,12 +40,12 @@ class Mock(Model):
             "method": self.method,
             "url": self.url,
             "responseHeaders": self.response_headers,
-            "responseBody": self.response_body,
+            "responseBody": nice_body_repr(self.response_body),
             "statusCode": self.status_code,
             "isAction": self.is_action,
             "action": self.action,
-            "createdAt": self.created_at,
-            "updatedAt": self.updated_at,
+            "createdAt": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "updatedAt": self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
             "requestsCount": self.requests_count,
             "rulesNumber": len(rules)
         }

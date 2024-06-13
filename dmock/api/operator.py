@@ -54,7 +54,7 @@ async def get_rule_api(mock_id: int, rule_id: int):
 async def create_mock_api(mock_request: MockIn, request: Request):
     try:
         mock = await create_mock_manually(**mock_request.dict())
-        return await mock.to_dict()
+        return JSONResponse(status_code=201, content=await mock.to_dict())
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
 

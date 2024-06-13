@@ -6,6 +6,8 @@ load_dotenv()
 
 # VERSION = distribution('dMock').version
 # os.getenv()
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_ROOT = os.path.join(BASE_DIR, 'dmock/ui/assets')
 
 CACHE_TTL = int(os.getenv('CACHE_TTL_MINUTES', default=1440))
 

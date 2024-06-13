@@ -8,11 +8,12 @@ from dmock import settings
 from dmock.models.setup import set_data
 from aerich import Command
 from pydantic import BaseModel
-from api import operator, overseer
-from middleware.dispatcher import dispatch_request
+from dmock.api import operator, overseer
+from dmock.middleware.dispatcher import dispatch_request
+from dmock.settings import STATIC_ROOT
 
 app = FastAPI()
-app.mount('/assets', StaticFiles(directory='ui/assets'), name='assets')
+app.mount('/assets', StaticFiles(directory=STATIC_ROOT), name='assets')
 app.include_router(operator.router)
 app.include_router(overseer.router)
 
